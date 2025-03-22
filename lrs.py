@@ -2,7 +2,7 @@ from typing import Callable
 import math
 
 '''
-    Тип для Learnig rate sheduling
+    Тип для Learning rate scheduling
 '''
 LRS = Callable[[tuple, int, Callable[[tuple], float]], float]
 
@@ -11,9 +11,9 @@ LRS = Callable[[tuple, int, Callable[[tuple], float]], float]
     
     c1 - гиперпараметр (из конспекта, хз пока нужен ли)
 
-    return - LRS (learning rate sheduling) по правилу Армихо с заданными гипер-параметрами 
+    return - LRS (learning rate scheduling) по правилу Армихо с заданными гипер-параметрами 
 '''
-def armiho(с1: float) -> LRS:
+def armiho(c1: float) -> LRS:
     ...
 
 '''
@@ -22,7 +22,7 @@ def armiho(с1: float) -> LRS:
     c1 - гиперпараметр (из конспекта, хз пока нужен ли)
     c2 - гиперпараметр (из конспекта, хз пока нужен ли)
     
-    return - LRS (learning rate sheduling) по правилу Вольфе с заданными гипер-параметрами 
+    return - LRS (learning rate scheduling) по правилу Вольфе с заданными гипер-параметрами 
 '''
 def wolfe(c1: float, c2: float) -> LRS:
     ...
@@ -33,7 +33,7 @@ def wolfe(c1: float, c2: float) -> LRS:
     c1 - гиперпараметр (из конспекта, хз пока нужен ли)
     c2 - гиперпараметр (из конспекта, хз пока нужен ли)
 
-    return - LRS (learning rate sheduling) по правилу Голдстейна с заданными гипер-параметрами 
+    return - LRS (learning rate scheduling) по правилу Голдстейна с заданными гипер-параметрами 
 '''
 def goldstein(c1: float, c2: float) -> LRS:
     ...
@@ -43,10 +43,10 @@ def goldstein(c1: float, c2: float) -> LRS:
 
     h0 - шаг
 
-    return - Постоянный LRS (learning rate sheduling) с заданными гипер-параметрами 
+    return - Постоянный LRS (learning rate scheduling) с заданными гипер-параметрами 
 '''
 def constant(h0: float) -> LRS:
-    return lambda x, k, f: h0;
+    return lambda x, k, f: h0
 
 '''
     Функциональный метод планирования шага (Экспоненциальное затухание)
@@ -54,9 +54,9 @@ def constant(h0: float) -> LRS:
     h0 - начальный шаг
     l - степень затухания
 
-    return - Функциональный LRS (learning rate sheduling) с заданными гипер-параметрами 
+    return - Функциональный LRS (learning rate scheduling) с заданными гипер-параметрами 
 '''
-def exponentialDecay(h0: float, l: float) -> LRS:
+def exponential_decay(h0: float, l: float) -> LRS:
     return lambda x, k, f: h0 * math.e**(-l*k)
 
 '''
@@ -65,7 +65,7 @@ def exponentialDecay(h0: float, l: float) -> LRS:
     a - гиперпараметр (из конспекта)
     b - гиперпараметр (из конспекта)
 
-    return - Функциональный LRS (learning rate sheduling) с заданными гипер-параметрами 
+    return - Функциональный LRS (learning rate scheduling) с заданными гипер-параметрами 
 '''
-def polinomialDecay(a: float, b: float) -> LRS:
+def polynomial_decay(a: float, b: float) -> LRS:
     return lambda x, k, f: (1.0 / math.sqrt(k + 1)) * (b * k + 1)**(-a)

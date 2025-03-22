@@ -14,11 +14,11 @@ class GraphicsPainter:
     '''
         Метод рисующий график уровней
     '''
-    def paintLevels(self):
+    def paint_levels(self):
         print("heheheh")
 
     '''
         Метод рисующий ещё график траектории
     '''
-    def paintTrajectory(self):
+    def paint_trajectory(self):
         print("ahahahah")
