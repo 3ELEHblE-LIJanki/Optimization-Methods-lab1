@@ -20,17 +20,19 @@ class GraphicsPainter:
         """
         Рисует график уровней функции (контуры для 2D или линию для 1D).
         """
+        bounds = [np.arange(start, end, 0.01) for start, end in self.descent.get_bounds()]
+
         if self.is_1d:
-            x = self.descent.get_bounds()[0]
-            f_values = self.descent.get_f()(x)
-            line = plt.plot(x, f_values, color=sns.color_palette("flare")[2],
-                            linewidth=2, alpha=0.9, label='Функция')[0]
+            x = bounds[0]
+            f_values = self.descent.get_f()([x])
+            _ = plt.plot(x, f_values, color=sns.color_palette("flare")[2],
+                           linewidth=2, alpha=0.9, label='Функция')[0]
         else:
-            x_grid, y_grid = np.meshgrid(*self.descent.get_bounds())
-            f_grid = self.descent.get_f()(x_grid, y_grid)
+            grid = np.meshgrid(*bounds)
+            f_grid = self.descent.get_f()(grid)
             palette = sns.color_palette("flare", as_cmap=True)
-            contourf = plt.contourf(x_grid, y_grid, f_grid, levels=50, cmap=palette, alpha=0.9)
-            contours = plt.contour(x_grid, y_grid, f_grid, levels=15,
+            contourf = plt.contourf(*grid, f_grid, levels=50, cmap=palette, alpha=0.9)
+            contours = plt.contour(*grid, f_grid, levels=15,
                                    colors=sns.color_palette("dark:white", n_colors=15),
                                    linewidths=1, alpha=0.95)
             plt.clabel(contours, inline=True, fontsize=12, fmt='%.1f',
@@ -47,7 +49,7 @@ class GraphicsPainter:
         path = np.array(self.descent.get_path())
         if self.is_1d:
             x_path = path
-            y_path = self.descent.get_f()(x_path)
+            y_path = self.descent.get_f()([x_path])
             plt.plot(x_path, y_path,
                      color=sns.color_palette("rocket")[2],
                      linewidth=3, alpha=0.9,
@@ -92,7 +94,7 @@ class GraphicsPainter:
 
         sns.despine(left=False, bottom=False)
         plt.xlabel('x', fontsize=16, labelpad=15)
-        plt.ylabel('y' if self.is_1d else 'y', fontsize=16, labelpad=15)
+        plt.ylabel('f(x)' if self.is_1d else 'y', fontsize=16, labelpad=15)
         plt.title('Оптимизация функции методом градиентного спуска',
                   fontsize=20, pad=25, fontweight='bold')
 
