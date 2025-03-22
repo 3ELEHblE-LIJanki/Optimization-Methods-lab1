@@ -1,30 +1,87 @@
-from typing import Callable
+from typing import Callable, List
 from lrs import LRS
-
+import math
 
 class GradientDecent:
     """
         Класс реализующий поиск максимума и минимума на основе градиентного спуска и переданных параметров
     """
 
-    def __init__(self, learning_rate_scheduling: LRS, max_iterations: int):
+    def __init__(self, learning_rate_scheduling: LRS, f: Callable[[List[float]], float], bounds: List[List[float]], eps: float):
         """
             learning_rate_scheduling - выбранная модель поиска шага
             max_iterations - максимальное число итераций (чтобы не зациклиться)
         """
         self.learning_rate_scheduling = learning_rate_scheduling
-        self.max_iterations = max_iterations
+        self.f = f
+        self.bounds = bounds
+        self.eps = eps
 
-    def find_min(self, f: Callable[[tuple], float]):
-        """
-            f - исследуемая функция
-            return - всё что необходимо, допишем когда графики будем рисовать
-        """
-        ...
+    def __init(self, start: List[float]):
+        self.x = start.copy()
+        self.path = []
 
-    def find_max(self, f: Callable[[tuple], float]):
+    def __diff(self, index: int):
+        x_i = self.x.copy()
+        x_i[index] += self.eps
+        return (self.f(x_i) - self.f(self.x)) / self.eps
+
+    def __gradient(self):
+        grad = []
+        for i in range(len(self.x)):
+            grad.append(self.__diff(i))
+        return grad
+
+
+    def find_min(self, start: List[float], max_iterations: int) -> float:
         """
-            f - исследуемая функция
-            return - всё что необходимо, допишем когда графики будем рисовать
+            start: List[float] - стартовая точка, в которой начнём поиск
+            max_iterations: int - максимальное количество итераций спуска
+            return - минимум полученный в ходе спуска
         """
-        ...
+        self.__init(start)
+        for i in range(max_iterations):
+            h = self.learning_rate_scheduling(self.x, i, self.f)
+            self.path.append(self.x)
+            grad = self.__gradient()
+            xx = []
+            for j in range(len(self.x)):
+                coord = self.x[j] - h * grad[j]
+                coord = max(coord, self.bounds[j][0])
+                coord = min(coord, self.bounds[j][1])
+                xx.append(coord)
+            if self.x == xx:
+                break
+            self.x = xx
+        return self.f(self.x)
+            
+
+    def find_max(self, start: List[float], max_iterations: int) -> float:
+        """
+            max_iterations: int - максимальное количество итераций спуска
+            return - максимум полученный в ходе спуска
+        """
+        self.__init(start)
+        for i in range(max_iterations):
+            h = self.learning_rate_scheduling(self.x, i, self.f)
+            self.path.append(self.x)
+            grad = self.__gradient()
+            xx = []
+            for j in range(len(self.x)):
+                coord = self.x[j] + h * grad[j]
+                coord = max(coord, self.bounds[j][0])
+                coord = min(coord, self.bounds[j][1])
+                xx.append(coord)
+            if self.x == xx:
+                break
+            self.x = xx
+        return self.f(self.x)
+
+    def get_bounds(self):
+        return self.bounds
+
+    def get_f(self):
+        return self.f
+
+    def get_path(self):
+        return self.path
