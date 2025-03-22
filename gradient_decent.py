@@ -20,7 +20,7 @@ class GradientDecent:
 
         return - всё что необходимо, допишем когда графики будем рисовать
     '''
-    def findMin(self, f: Callable[[tuple], float]):
+    def find_min(self, f: Callable[[tuple], float]):
         ...
 
     '''
@@ -28,7 +28,5 @@ class GradientDecent:
 
         return - всё что необходимо, допишем когда графики будем рисовать
     '''
-    def findMax(self, f: Callable[[tuple], float]):
+    def find_max(self, f: Callable[[tuple], float]):
         ...
-
-    pass
