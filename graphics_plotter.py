@@ -3,7 +3,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 import seaborn as sns
 
-class GraphicsPainter:
+class GraphicsPlotter:
     """
     Класс для отрисовки графиков градиентного спуска для одномерных и двумерных функций.
 
