@@ -4,6 +4,7 @@ import seaborn as sns
 from matplotlib.animation import FuncAnimation
 from IPython.display import HTML
 
+
 class GraphicsPlotter:
     def __init__(self, descent):
         self.descent = descent
@@ -96,7 +97,7 @@ class GraphicsPlotter:
         ax.legend(fontsize=14, loc='upper right', frameon=True, edgecolor='black', facecolor='white', framealpha=0.95)
         plt.show()
 
-    def animate_2d(self):
+    def generate_2d_anim(self):
         GraphicsPlotter._setup_plot_style()
         fig, ax = GraphicsPlotter._create_figure()
         self._plot_levels(ax)
@@ -107,13 +108,16 @@ class GraphicsPlotter:
             raise ValueError("Для 1D анимации путь должен быть одномерным массивом")
         line, = ax.plot([], [], color='red', linewidth=3, alpha=0.9, label='Путь')
         start_point, = ax.plot([], [], 'o', color='lime', markersize=15, markeredgecolor='black', label='Старт')
-        current_point, = ax.plot([], [], 'o', color='red', markersize=15, markeredgecolor='black', label='Текущая позиция')
+        current_point, = ax.plot([], [], 'o', color='red', markersize=15, markeredgecolor='black',
+                                 label='Текущая позиция')
         GraphicsPlotter._finalize_plot(ax, 'x', 'f(x)', 'Анимация градиентного спуска', self.is_1d)
+
         def init():
             line.set_data([], [])
             start_point.set_data([], [])
             current_point.set_data([], [])
             return line, start_point, current_point
+
         def update(frame):
             if self.is_1d:
                 x_path = path[:frame + 1]
@@ -128,12 +132,13 @@ class GraphicsPlotter:
                 start_point.set_data([path[0, 0]], [path[0, 1]])
                 current_point.set_data([path[frame, 0]], [path[frame, 1]])
             return line, start_point, current_point
+
         anim = FuncAnimation(fig, update, init_func=init, frames=len(path),
                              interval=200, blit=False, repeat=True)
         plt.close(fig)
-        return HTML(anim.to_jshtml())
+        return anim
 
-    def animate_3d(self):
+    def generate_3d_anim(self):
         if self.is_1d:
             raise ValueError("3D-анимация доступна только для 2D-функций.")
         GraphicsPlotter._setup_plot_style()
@@ -147,7 +152,8 @@ class GraphicsPlotter:
             raise ValueError("Для 3D анимации путь должен быть двумерным массивом (n, 2)")
         line, = ax.plot([], [], [], color='red', linewidth=3, alpha=1.0, label='Путь')
         start_point, = ax.plot([], [], [], 'o', color='lime', markersize=15, markeredgecolor='black', label='Старт')
-        current_point, = ax.plot([], [], [], 'o', color='red', markersize=15, markeredgecolor='black', label='Текущая позиция')
+        current_point, = ax.plot([], [], [], 'o', color='red', markersize=15, markeredgecolor='black',
+                                 label='Текущая позиция')
         ax.view_init(elev=30, azim=135)
         ax.set_xlabel('x', fontsize=16, labelpad=20)
         ax.set_ylabel('y', fontsize=16, labelpad=20)
@@ -156,6 +162,7 @@ class GraphicsPlotter:
         ax.legend(fontsize=14, loc='upper right', frameon=True, edgecolor='black', facecolor='white', framealpha=0.95)
         cbar = fig.colorbar(surf, ax=ax, shrink=0.5, aspect=25, pad=0.1, fraction=0.046)
         cbar.set_label('Значение функции', fontsize=14, labelpad=15)
+
         def init():
             line.set_data([], [])
             line.set_3d_properties([])
@@ -164,6 +171,7 @@ class GraphicsPlotter:
             current_point.set_data([], [])
             current_point.set_3d_properties([])
             return line, start_point, current_point
+
         def update(frame):
             line.set_data(path[:frame + 1, 0], path[:frame + 1, 1])
             line.set_3d_properties(self.descent.get_f()([path[:frame + 1, 0], path[:frame + 1, 1]]))
@@ -172,7 +180,30 @@ class GraphicsPlotter:
             current_point.set_data([path[frame, 0]], [path[frame, 1]])
             current_point.set_3d_properties([self.descent.get_f()([path[frame, 0], path[frame, 1]])])
             return line, start_point, current_point
+
         anim = FuncAnimation(fig, update, init_func=init, frames=len(path),
                              interval=200, blit=False, repeat=True)
         plt.close(fig)
-        return HTML(anim.to_jshtml())
+        return anim
+
+    def animate_2d(self):
+        anim = self.generate_2d_anim()
+        html = HTML(anim.to_jshtml())
+        return html
+
+    def animate_3d(self):
+        anim = self.generate_3d_anim()
+        html = HTML(anim.to_jshtml())
+        return html
+
+    def save_animation(self, filename='animation.gif', animation_type='2d', fps=5):
+        if animation_type not in ['2d', '3d']:
+            raise ValueError("animation_type должен быть '2d' или '3d'")
+
+        if animation_type == '2d':
+            anim = self.generate_2d_anim()
+        else:
+            anim = self.generate_3d_anim()
+
+        anim.save(filename, writer='pillow', fps=fps)
+        print(f"Анимация сохранена как {filename}")
