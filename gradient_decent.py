@@ -1,6 +1,5 @@
 from typing import Callable, List
-from lrs import LRS
-import math
+from lrs import LRS, gradient
 
 class GradientDecent:
     """
@@ -21,18 +20,6 @@ class GradientDecent:
         self.x = start.copy()
         self.path = []
 
-    def __diff(self, index: int):
-        x_i = self.x.copy()
-        x_i[index] += self.eps
-        return (self.f(x_i) - self.f(self.x)) / self.eps
-
-    def __gradient(self):
-        grad = []
-        for i in range(len(self.x)):
-            grad.append(self.__diff(i))
-        return grad
-
-
     def find_min(self, start: List[float], max_iterations: int) -> float:
         """
             start: List[float] - стартовая точка, в которой начнём поиск
@@ -43,7 +30,7 @@ class GradientDecent:
         for i in range(max_iterations):
             h = self.learning_rate_scheduling(self.x, i, self.f)
             self.path.append(self.x)
-            grad = self.__gradient()
+            grad = gradient(self.f, self.x, self.eps)
             xx = []
             for j in range(len(self.x)):
                 coord = self.x[j] - h * grad[j]
@@ -65,7 +52,7 @@ class GradientDecent:
         for i in range(max_iterations):
             h = self.learning_rate_scheduling(self.x, i, self.f)
             self.path.append(self.x)
-            grad = self.__gradient()
+            grad = gradient(self.f, self.x, self.eps)
             xx = []
             for j in range(len(self.x)):
                 coord = self.x[j] + h * grad[j]
