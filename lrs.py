@@ -21,12 +21,6 @@ def mult(x_1, x_2):
 def addv(x_1, x_2):
     return [x_1[i] + x_2[i] for i in range(len(x_1))]
 
-def impulse(k: int):
-    if k % 100 == 0:
-        return k
-    else:
-        return 0
-
 '''
     Тип для Learning rate scheduling
 '''
@@ -49,7 +43,7 @@ def _arm(c1, q, x, k, f):
     a = 500000
     while l(a) < f(addv([a * ff_i for ff_i in fff], x)):
         a = q * a
-    return a + impulse(k)
+    return a
 
 '''
     Правило Вольфе
@@ -92,7 +86,7 @@ def constant(h0: float) -> LRS:
     return - Функциональный LRS (learning rate scheduling) с заданными гипер-параметрами 
 '''
 def exponential_decay(h0: float, l: float) -> LRS:
-    return lambda x, k, f: h0 * math.e**(-l*k) + impulse(k)
+    return lambda x, k, f: h0 * math.e**(-l*k)
 
 '''
     Функциональный метод планирования шага (Полиномиальное затухание)
@@ -103,4 +97,4 @@ def exponential_decay(h0: float, l: float) -> LRS:
     return - Функциональный LRS (learning rate scheduling) с заданными гипер-параметрами 
 '''
 def polynomial_decay(a: float, b: float) -> LRS:
-    return lambda x, k, f: (1.0 / math.sqrt(k + 1)) * (b * k + 1)**(-a) + impulse(k)
+    return lambda x, k, f: (1.0 / math.sqrt(k + 1)) * (b * k + 1)**(-a)
