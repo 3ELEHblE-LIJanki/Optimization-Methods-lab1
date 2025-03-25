@@ -1,12 +1,20 @@
 from typing import Callable, List
+
+import numpy as np
+
 from lrs import LRS, gradient
+
 
 class GradientDecent:
     """
         Класс реализующий поиск максимума и минимума на основе градиентного спуска и переданных параметров
     """
 
-    def __init__(self, learning_rate_scheduling: LRS, f: Callable[[List[float]], float], bounds: List[List[float]], eps: float):
+    ACCEPTABLE_ACCURACY: float = 0.00001
+
+
+    def __init__(self, learning_rate_scheduling: LRS, f: Callable[[List[float]], float], bounds: List[List[float]],
+                 eps: float):
         """
             learning_rate_scheduling - выбранная модель поиска шага
             max_iterations - максимальное число итераций (чтобы не зациклиться)
@@ -37,11 +45,11 @@ class GradientDecent:
                 coord = max(coord, self.bounds[j][0])
                 coord = min(coord, self.bounds[j][1])
                 xx.append(coord)
-            if self.x == xx:
+            if np.linalg.norm(np.array(self.x) - np.array(xx)) < self.eps:
                 break
             self.x = xx
+            # print(self.current_point())
         return self.f(self.x)
-            
 
     def find_max(self, start: List[float], max_iterations: int) -> float:
         """
@@ -59,7 +67,7 @@ class GradientDecent:
                 coord = max(coord, self.bounds[j][0])
                 coord = min(coord, self.bounds[j][1])
                 xx.append(coord)
-            if self.x == xx:
+            if np.linalg.norm(np.array(self.x) - np.array(xx)) < self.eps:
                 break
             self.x = xx
         return self.f(self.x)
@@ -72,3 +80,6 @@ class GradientDecent:
 
     def get_path(self):
         return self.path
+
+    def current_point(self):
+        return [self.x, self.f(self.x)]
