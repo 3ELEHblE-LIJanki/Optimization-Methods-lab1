@@ -174,24 +174,45 @@ def exponential_decay(h0: float, l: float) -> LRS:
 def polynomial_decay(a: float, b: float) -> LRS:
     return lambda x, k, f: (1.0 / math.sqrt(k + 1)) * (b * k + 1)**(-a)
 
-def linear_descent(eps: float, max_steps_count: int, f_bounds: List[List[float]]) -> LRS:
-    """
-    Функциональный метод планирования шага (Линейное золотое сечение)
-    eps - точность линейного поиска
-    max_steps_count - максимальное количество шагов линейного поиска
-    f_bounds - границы функции
-    """
-    return lambda x, _, f: __linear_descent(x, f, eps, max_steps_count, f_bounds)
 
-def __linear_descent(x, f, eps, max_steps_count, f_bounds):
-    bounds = [[0, float('inf')]]
+def linear_search(eps: float, max_steps_count: int, f_bounds: List[List[float]]) -> Callable:
+    """
+    Метод линейного поиска (Золотое сечение).
+
+    :param eps: точность поиска
+    :param max_steps_count: максимальное число шагов
+    :param f_bounds: границы переменных функции
+    :return: функция, выполняющая линейный поиск по направлению антиградиента
+    """
+    return lambda x, _, f: __linear_search(x, f, eps, max_steps_count, f_bounds)
+
+
+def __linear_search(x: np.ndarray, f: Callable, eps: float, max_steps_count: int, f_bounds: List[List[float]]):
+    """
+    Выполняет линейный поиск в направлении антиградиента.
+
+    :param x: текущая точка
+    :param f: целевая функция
+    :param eps: точность поиска
+    :param max_steps_count: максимальное число шагов
+    :param f_bounds: границы переменных
+    :return: найденное значение шага
+    """
+    bounds = np.array([[0, np.inf]])
     grad = np.array(gradient(f, x, EPS))
-    for i in range(len(x)):
-        if (x[i] - f_bounds[i][0]) / grad[i] > 0:
-            bounds[0][1] = min(bounds[0][1], (x[i] - f_bounds[i][0]) / grad[i])
-        if (x[i] - f_bounds[i][1]) / grad[i] > 0:
-            bounds[0][1] = min(bounds[0][1], (x[i] - f_bounds[i][1]) / grad[i])
-    ff = lambda h: f(x - h * grad)
-    lin_dec = LinearDecent(ff, bounds, eps)
-    lin_dec.find_min(bounds[0][0], max_steps_count)
-    return lin_dec.get_path()[-1][0]
+
+    with np.errstate(divide='ignore', invalid='ignore'):
+        candidates = np.array([
+            (x - np.array(f_bounds)[:, 0]) / grad,
+            (x - np.array(f_bounds)[:, 1]) / grad
+        ])
+
+    min_positive_candidate = np.min(candidates[candidates > 0], initial=np.inf)
+    bounds[0, 1] = min(bounds[0, 1], min_positive_candidate)
+
+    objective_function = lambda h: f(x - h * grad)
+
+    linear_searcher = LinearDecent(objective_function, bounds, eps)
+    linear_searcher.find_min(bounds[0, 0], max_steps_count)
+
+    return linear_searcher.get_path()[-1][0]
