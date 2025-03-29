@@ -174,22 +174,24 @@ def exponential_decay(h0: float, l: float) -> LRS:
 def polynomial_decay(a: float, b: float) -> LRS:
     return lambda x, k, f: (1.0 / math.sqrt(k + 1)) * (b * k + 1)**(-a)
 
-def linear_decent(bounds: List[List[float]], eps: float, max_steps_count: int, f_bounds: List[List[float]]) -> LRS:
+def linear_decent(eps: float, max_steps_count: int, f_bounds: List[List[float]]) -> LRS:
     """
-    bounds - границы поиска
     Функциональный метод планирования шага (Линейное золотое сечение)
     eps - точность линейного поиска
     max_steps_count - максимальное количество шагов линейного поиска
     f_bounds - границы функции
     """
-    return lambda x, _, f: __linear_decent(x, f, bounds, eps, max_steps_count, f_bounds)
+    return lambda x, _, f: __linear_decent(x, f, eps, max_steps_count, f_bounds)
 
-def __linear_decent(x, f, bounds, eps, max_steps_count, f_bounds):
-    def ff(h):
-        delta = x - h * np.array(gradient(f, x, EPS))
-        for i in range(len(delta)):
-            delta[i] = max(min(delta[i], f_bounds[i][1]), f_bounds[i][0])
-        return f(delta)
+def __linear_decent(x, f, eps, max_steps_count, f_bounds):
+    bounds = [[0, float('inf')]]
+    grad = np.array(gradient(f, x, EPS))
+    for i in range(len(x)):
+        if (x[i] - f_bounds[i][0]) / grad[i] > 0:
+            bounds[0][1] = min(bounds[0][1], (x[i] - f_bounds[i][0]) / grad[i])
+        if (x[i] - f_bounds[i][1]) / grad[i] > 0:
+            bounds[0][1] = min(bounds[0][1], (x[i] - f_bounds[i][1]) / grad[i])
+    ff = lambda h: f(x - h * grad)
     lin_dec = LinearDecent(ff, bounds, eps)
     lin_dec.find_min(bounds[0][0], max_steps_count)
     return lin_dec.get_path()[-1][0]
