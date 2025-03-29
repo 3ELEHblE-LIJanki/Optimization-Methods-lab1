@@ -30,14 +30,14 @@ class LinearDecent:
         self.__init(start)
         l = self.bounds[0][0]
         r = self.bounds[0][1]
-        self.path.extend(golden_ratio(self.f, l, r, self.eps, max_steps_count))
+        self.path.extend(self.lin_algo(self.f, l, r, self.eps, max_steps_count))
         return self.f(self.path[-1])
 
     def find_max(self, start: float | list[float], max_steps_count: int):
         self.__init(start)
         l = self.bounds[0][0]
         r = self.bounds[0][1]
-        self.path.extend(self.lin_algo(lambda x: self.f(-1 * np.array(x)), l, r, self.eps, max_steps_count))
+        self.path.extend(self.lin_algo(lambda x: -1 * self.f(x), l, r, self.eps, max_steps_count))
         return self.f(self.path[-1])
 
 
