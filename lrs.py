@@ -1,14 +1,19 @@
-from typing import Callable
+from typing import Callable, List
 import math
 
 import numpy as np
+
+from graphics_plotter import GraphicsPlotter
+from linear_desent import LinearDecent
 
 EPS = 1e-5
 
 def diff(f, x, eps, index: int):
     x_i = x.copy()
     x_i[index] += eps
-    return (f(x_i) - f(x)) / eps
+    x_j = x.copy()
+    x_j[index] -= eps
+    return (f(x_i) - f(x_j)) / (2 * eps)
 
 def gradient(f, x, eps):
     grad = []
@@ -168,3 +173,23 @@ def exponential_decay(h0: float, l: float) -> LRS:
 '''
 def polynomial_decay(a: float, b: float) -> LRS:
     return lambda x, k, f: (1.0 / math.sqrt(k + 1)) * (b * k + 1)**(-a)
+
+def linear_decent(bounds: List[List[float]], eps: float, max_steps_count: int, f_bounds: List[List[float]]) -> LRS:
+    """
+    bounds - границы поиска
+    Функциональный метод планирования шага (Линейное золотое сечение)
+    eps - точность линейного поиска
+    max_steps_count - максимальное количество шагов линейного поиска
+    f_bounds - границы функции
+    """
+    return lambda x, _, f: __linear_decent(x, f, bounds, eps, max_steps_count, f_bounds)
+
+def __linear_decent(x, f, bounds, eps, max_steps_count, f_bounds):
+    def ff(h):
+        delta = x - h * np.array(gradient(f, x, EPS))
+        for i in range(len(delta)):
+            delta[i] = max(min(delta[i], f_bounds[i][1]), f_bounds[i][0])
+        return f(delta)
+    lin_dec = LinearDecent(ff, bounds, eps)
+    lin_dec.find_min(bounds[0][0], max_steps_count)
+    return lin_dec.get_path()[-1][0]
