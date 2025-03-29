@@ -4,7 +4,7 @@ import math
 import numpy as np
 
 from graphics_plotter import GraphicsPlotter
-from linear_desent import LinearDecent
+from linear_desсent import LinearDecent
 
 EPS = 1e-5
 
@@ -174,16 +174,16 @@ def exponential_decay(h0: float, l: float) -> LRS:
 def polynomial_decay(a: float, b: float) -> LRS:
     return lambda x, k, f: (1.0 / math.sqrt(k + 1)) * (b * k + 1)**(-a)
 
-def linear_decent(eps: float, max_steps_count: int, f_bounds: List[List[float]]) -> LRS:
+def linear_descent(eps: float, max_steps_count: int, f_bounds: List[List[float]]) -> LRS:
     """
     Функциональный метод планирования шага (Линейное золотое сечение)
     eps - точность линейного поиска
     max_steps_count - максимальное количество шагов линейного поиска
     f_bounds - границы функции
     """
-    return lambda x, _, f: __linear_decent(x, f, eps, max_steps_count, f_bounds)
+    return lambda x, _, f: __linear_descent(x, f, eps, max_steps_count, f_bounds)
 
-def __linear_decent(x, f, eps, max_steps_count, f_bounds):
+def __linear_descent(x, f, eps, max_steps_count, f_bounds):
     bounds = [[0, float('inf')]]
     grad = np.array(gradient(f, x, EPS))
     for i in range(len(x)):
