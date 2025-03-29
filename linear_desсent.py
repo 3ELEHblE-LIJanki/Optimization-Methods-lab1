@@ -1,19 +1,20 @@
 from math import sqrt
 from typing import Callable, List
 
+from linear_algo import golden_ratio
+import numpy as np
 
 # работает только для функций 1d
 # Расчитываю что он будет рисовать границы
 
 class LinearDecent:
-    invphi : float = (-1 + sqrt(5)) / 2 # 1/phi
-
-    def __init__(self, f: Callable[[List[float]], float], bounds: List[List[float]], eps):
+    def __init__(self, f: Callable[[List[float]], float], bounds: List[List[float]], eps, lin_algo):
         self.f = f
         self.eps = eps
         self.bounds = bounds
         self.path = []
         self.x = -100
+        self.lin_algo = lin_algo
 
     def __init(self,  start: float):
         if isinstance(start, list):
@@ -29,41 +30,15 @@ class LinearDecent:
         self.__init(start)
         l = self.bounds[0][0]
         r = self.bounds[0][1]
-        count_iter = 2
-        while abs(l - r) > self.eps and count_iter < max_steps_count:
-            x1 = r -  (r - l) * self.invphi
-            x2 = l + (r - l) * self.invphi
-            # print("__", x1, x2, self.f([x1]), self.f([x2]))
-            if self.f([x1]) < self.f([x2]):
-                r = x2
-                self.path.append([r])
-            else:
-                l = x1
-                self.path.append([x1])
-            count_iter += 1
-            # print(l, r)
-        self.x = min(r, l)
-        self.path.append([self.x])
-        return self.f([self.x])
+        self.path.extend(golden_ratio(self.f, l, r, self.eps, max_steps_count))
+        return self.f(self.path[-1])
 
     def find_max(self, start: float | list[float], max_steps_count: int):
         self.__init(start)
         l = self.bounds[0][0]
-        r = self.bounds[1][0]
-        count_iter = 0
-        while abs(l - r) > self.eps and count_iter < max_steps_count:
-            x1 = l + (r - l) * self.invphi
-            x2 = r - (r - l) * self.invphi
-            if self.f([x1]) > self.f([x2]):
-                r = x2
-                self.path.append([r])
-            else:
-                l = x1
-                self.path.append([x1])
-            count_iter += 1
-        self.x = max(r , l)
-        self.path.append([self.x])
-        return self.f([self.x])
+        r = self.bounds[0][1]
+        self.path.extend(self.lin_algo(lambda x: self.f(-1 * np.array(x)), l, r, self.eps, max_steps_count))
+        return self.f(self.path[-1])
 
 
     def get_bounds(self):
@@ -74,5 +49,3 @@ class LinearDecent:
 
     def get_path(self):
         return self.path
-
-
