@@ -20,7 +20,7 @@ class GraphicsPlotter:
         })
 
     @staticmethod
-    def _create_figure(figsize=(12, 9), dpi=100, projection=None):
+    def _create_figure(figsize=(12, 9), dpi=1000, projection=None):
         fig = plt.figure(figsize=figsize, dpi=dpi)
         ax = fig.add_subplot(111, projection='3d' if projection == '3d' else None)
         return fig, ax
@@ -35,10 +35,12 @@ class GraphicsPlotter:
         plt.tight_layout()
 
     def _plot_levels(self, ax):
-        bounds = [np.linspace(start, end, 100) for start, end in self.descent.get_bounds()]
+        bounds = [np.linspace(start, end, 5000) for start, end in self.descent.get_bounds()]
         if self.is_1d:
             x = bounds[0]
-            f_values = self.descent.get_f()([x])
+            f_values = []
+            for i in  x:
+                f_values.append(self.descent.get_f()([i]))
             ax.plot(x, f_values, color=sns.color_palette("flare")[2], linewidth=2, alpha=0.9, label='Функция')
         else:
             grid = np.meshgrid(*bounds)
