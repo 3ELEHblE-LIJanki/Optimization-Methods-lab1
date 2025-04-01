@@ -5,7 +5,7 @@ import numpy as np
 
 from linear_desсent import LinearDecent
 
-EPS = 1e-5
+EPS = 1e-8
 
 def diff(f, x, eps, index: int):
     x_i = x.copy()

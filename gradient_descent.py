@@ -1,4 +1,5 @@
 from typing import Callable, List
+from scipy.optimize import minimize
 
 import numpy as np
 
@@ -72,3 +73,50 @@ class GradientDecent:
 
     def current_point(self):
         return [self.x, self.f(self.x)]
+
+
+class SimpyWrapper:
+    """
+        Класс реализующий поиск максимума и минимума на основе scipy.optimize
+    """
+
+    ACCEPTABLE_ACCURACY: float = 0.00001
+
+
+    def __init__(self, f: Callable[[List[float]], float], bounds: List[List[float]],
+                 eps: float = ACCEPTABLE_ACCURACY):
+        """
+            method: str - название метода из библиотеки scipy.optimize
+            bounds: - границы исследования функции
+        """
+        self.f = f
+        self.bounds = bounds
+        self.eps = eps
+
+    def find_min(self, start: List[float], max_iterations: int) -> float:
+        """
+            start: List[float] - стартовая точка, в которой начнём поиск
+            max_iterations: int - максимальное количество итераций спуска
+            return - минимум полученный в ходе спуска
+        """
+        self.path=[start]
+        self.res = minimize(
+            x0=start,
+            fun=self.f,
+            method='CG',
+            callback=lambda x: self.path.append(x.tolist()),
+            options={'maxiter': max_iterations}
+        )
+        return self.f(self.res.x)
+
+    def get_bounds(self):
+        return self.bounds
+
+    def get_f(self):
+        return self.f
+
+    def get_path(self):
+        return self.path
+
+    def current_point(self):
+        return [self.res.x, self.f(self.res.x)]
