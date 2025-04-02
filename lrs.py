@@ -177,7 +177,7 @@ def polynomial_decay(a: float, b: float) -> LRS:
     return lambda _x, k, _f, _b: (1.0 / math.sqrt(k + 1)) * (b * k + 1)**(-a)
 
 
-def linear_search(eps: float, max_steps_count: int) -> Callable:
+def linear_search(eps: float, max_steps_count: int, lin_algo) -> Callable:
     """
     Метод линейного поиска (Золотое сечение).
 
@@ -186,10 +186,10 @@ def linear_search(eps: float, max_steps_count: int) -> Callable:
     :param f_bounds: границы переменных функции
     :return: функция, выполняющая линейный поиск по направлению антиградиента
     """
-    return lambda x, _, f, f_bounds: __linear_search(x, f, eps, max_steps_count, f_bounds)
+    return lambda x, _, f, f_bounds: __linear_search(x, f, eps, max_steps_count, f_bounds, lin_algo)
 
 
-def __linear_search(x: np.ndarray, f: Callable, eps: float, max_steps_count: int, f_bounds: List[List[float]]):
+def __linear_search(x: np.ndarray, f: Callable, eps: float, max_steps_count: int, f_bounds: List[List[float]], lin_algo):
     """
     Выполняет линейный поиск в направлении антиградиента.
 
@@ -214,7 +214,7 @@ def __linear_search(x: np.ndarray, f: Callable, eps: float, max_steps_count: int
 
     objective_function = lambda h: f(x - h * grad)
 
-    linear_searcher = LinearDecent(objective_function, bounds, eps)
+    linear_searcher = LinearDecent(objective_function, bounds, eps, lin_algo)
     linear_searcher.find_min(bounds[0, 0], max_steps_count)
 
     return linear_searcher.get_path()[-1][0]
