@@ -179,11 +179,10 @@ def polynomial_decay(a: float, b: float) -> LRS:
 
 def linear_search(eps: float, max_steps_count: int, lin_algo) -> Callable:
     """
-    Метод линейного поиска (Золотое сечение).
-
+    Метод линейного поиска.
     :param eps: точность поиска
     :param max_steps_count: максимальное число шагов
-    :param f_bounds: границы переменных функции
+    :param lin_algo: алгоритм одномерного спуска
     :return: функция, выполняющая линейный поиск по направлению антиградиента
     """
     return lambda x, _, f, f_bounds: __linear_search(x, f, eps, max_steps_count, f_bounds, lin_algo)

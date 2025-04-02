@@ -64,16 +64,22 @@ class GraphicsPlotter:
             ax.scatter(path[0, 0], path[0, 1], color='lime', s=250, edgecolor='black', label='Старт')
             ax.scatter(path[-1, 0], path[-1, 1], color='red', s=250, edgecolor='black', label='Минимум')
 
-    def plot(self):
+    def plot(self, title="Оптимизация функции методом градиентного спуска"):
+        """
+            :param title: заголовок графика
+        """
         GraphicsPlotter._setup_plot_style()
         fig, ax = GraphicsPlotter._create_figure()
         self._plot_levels(ax)
         self._plot_trajectory(ax)
         sns.despine(left=False, bottom=False)
-        GraphicsPlotter._finalize_plot(ax, 'x', 'f(x)', 'Оптимизация функции методом градиентного спуска', self.is_1d)
+        GraphicsPlotter._finalize_plot(ax, 'x', 'f(x)', title, self.is_1d)
         plt.show()
 
-    def plot_3d(self):
+    def plot_3d(self, title="3D Оптимизация градиентным спуском"):
+        """
+            :param title: заголовок графика
+        """
         if self.is_1d:
             raise ValueError("3D-график доступен только для 2D-функций.")
         GraphicsPlotter._setup_plot_style()
@@ -93,13 +99,16 @@ class GraphicsPlotter:
         ax.set_xlabel('x', fontsize=16, labelpad=20)
         ax.set_ylabel('y', fontsize=16, labelpad=20)
         ax.set_zlabel('f(x, y)', fontsize=16, labelpad=20)
-        ax.set_title('3D Оптимизация градиентным спуском', fontsize=20, pad=25, fontweight='bold')
+        ax.set_title(title, fontsize=20, pad=25, fontweight='bold')
         cbar = fig.colorbar(surf, ax=ax, shrink=0.5, aspect=25, pad=0.1, fraction=0.046)
         cbar.set_label('Значение функции', fontsize=14, labelpad=15)
         ax.legend(fontsize=14, loc='upper right', frameon=True, edgecolor='black', facecolor='white', framealpha=0.95)
         plt.show()
 
-    def generate_2d_anim(self):
+    def generate_2d_anim(self, title="Анимация градиентного спуска"):
+        """
+            :param title: заголовок графика
+        """
         GraphicsPlotter._setup_plot_style()
         fig, ax = GraphicsPlotter._create_figure()
         self._plot_levels(ax)
@@ -112,7 +121,7 @@ class GraphicsPlotter:
         start_point, = ax.plot([], [], 'o', color='lime', markersize=15, markeredgecolor='black', label='Старт')
         current_point, = ax.plot([], [], 'o', color='red', markersize=15, markeredgecolor='black',
                                  label='Текущая позиция')
-        GraphicsPlotter._finalize_plot(ax, 'x', 'f(x)', 'Анимация градиентного спуска', self.is_1d)
+        GraphicsPlotter._finalize_plot(ax, 'x', 'f(x)', title, self.is_1d)
 
         def init():
             line.set_data([], [])
@@ -140,7 +149,10 @@ class GraphicsPlotter:
         plt.close(fig)
         return anim
 
-    def generate_3d_anim(self):
+    def generate_3d_anim(self, title="Анимация градиентного спуска"):
+        """
+            :param title: заголовок графика
+        """
         if self.is_1d:
             raise ValueError("3D-анимация доступна только для 2D-функций.")
         GraphicsPlotter._setup_plot_style()
@@ -160,7 +172,7 @@ class GraphicsPlotter:
         ax.set_xlabel('x', fontsize=16, labelpad=20)
         ax.set_ylabel('y', fontsize=16, labelpad=20)
         ax.set_zlabel('f(x, y)', fontsize=16, labelpad=20)
-        ax.set_title('3D Анимация градиентного спуска', fontsize=20, pad=25, fontweight='bold')
+        ax.set_title(title, fontsize=20, pad=25, fontweight='bold')
         ax.legend(fontsize=14, loc='upper right', frameon=True, edgecolor='black', facecolor='white', framealpha=0.95)
         cbar = fig.colorbar(surf, ax=ax, shrink=0.5, aspect=25, pad=0.1, fraction=0.046)
         cbar.set_label('Значение функции', fontsize=14, labelpad=15)
