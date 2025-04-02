@@ -39,13 +39,13 @@ LRS = Callable[[tuple, int, Callable[[tuple], float], List[List[float]]], float]
 '''
 
 def armiho(c1: float, q: float) -> LRS:
-    '''
+    """
     Правило Армихо
-    
+
     c1 - гиперпараметр (из конспекта, хз пока нужен ли)
 
-    return - LRS (learning rate scheduling) по правилу Армихо с заданными гипер-параметрами 
-    '''
+    return - LRS (learning rate scheduling) по правилу Армихо с заданными гипер-параметрами
+    """
     return lambda x, _, f, f_bounds: _arm(c1, q, x, f, f_bounds)
 
 def _arm(c1, q, x, f, f_bounds):
@@ -58,14 +58,14 @@ def _arm(c1, q, x, f, f_bounds):
     return a
 
 def wolfe(c1: float = 1e-4, c2: float = 0.9) -> LRS:
-    '''
+    """
     Правило Вольфе
 
     c1 - гиперпараметр (из конспекта, хз пока нужен ли)
     c2 - гиперпараметр (из конспекта, хз пока нужен ли)
-    
-    return - LRS (learning rate scheduling) по правилу Вольфе с заданными гипер-параметрами 
-    '''
+
+    return - LRS (learning rate scheduling) по правилу Вольфе с заданными гипер-параметрами
+    """
     return lambda x, _, f, f_bounds: _wolfe(c1, c2, x, f, f_bounds)
 
 
@@ -101,14 +101,14 @@ def _wolfe(c1, c2, x, f, f_bounds):
     return a
 
 def goldstein(c1: float = 0.1) -> LRS:
-    '''
+    """
     Правило Голдстейна
-   
+
     c1 - гиперпараметр (из конспекта, хз пока нужен ли)
     c2 - гиперпараметр (из конспекта, хз пока нужен ли)
 
-    return - LRS (learning rate scheduling) по правилу Голдстейна с заданными гипер-параметрами 
-    '''
+    return - LRS (learning rate scheduling) по правилу Голдстейна с заданными гипер-параметрами
+    """
     return lambda x, _, f, f_bounds: _goldstein(c1, x, f, f_bounds)
 
 
@@ -145,35 +145,35 @@ def _goldstein(c1, x, f, f_bounds):
 
 
 def constant(h0: float) -> LRS:
-    '''
+    """
     Постоянный метод планирования шага
 
     h0 - шаг
 
-    return - Постоянный LRS (learning rate scheduling) с заданными гипер-параметрами 
-    '''
+    return - Постоянный LRS (learning rate scheduling) с заданными гипер-параметрами
+    """
     return lambda _x, _k, _f, _b: h0
 
 def exponential_decay(h0: float, l: float) -> LRS:
-    '''
+    """
     Функциональный метод планирования шага (Экспоненциальное затухание)
 
     h0 - начальный шаг
     l - степень затухания
 
-    return - Функциональный LRS (learning rate scheduling) с заданными гипер-параметрами 
-    '''
-    return lambda _x, k, _f, _b: h0 * math.e**(-l*k)
+    return - Функциональный LRS (learning rate scheduling) с заданными гипер-параметрами
+    """
+    return lambda _x, k, _f, _b: h0 * math.e**(-l * k)
 
 def polynomial_decay(a: float, b: float) -> LRS:
-    '''
+    """
     Функциональный метод планирования шага (Полиномиальное затухание)
-   
+
     a - гиперпараметр (из конспекта)
     b - гиперпараметр (из конспекта)
 
-    return - Функциональный LRS (learning rate scheduling) с заданными гипер-параметрами 
-    '''
+    return - Функциональный LRS (learning rate scheduling) с заданными гипер-параметрами
+    """
     return lambda _x, k, _f, _b: (1.0 / math.sqrt(k + 1)) * (b * k + 1)**(-a)
 
 
