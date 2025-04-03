@@ -19,6 +19,7 @@ class GradientDecent:
         """
             learning_rate_scheduling - выбранная модель поиска шага
             max_iterations - максимальное число итераций (чтобы не зациклиться)
+            eps: - точность подсчёта градиента
         """
         self.learning_rate_scheduling = learning_rate_scheduling
         self.f = f
@@ -57,6 +58,7 @@ class GradientDecent:
 
     def find_max(self, start: List[float], max_iterations: int) -> float:
         """
+            start: List[float] - стартовая точка, в которой начнём поиск
             max_iterations: int - максимальное количество итераций спуска
             return - максимум полученный в ходе спуска
         """
@@ -88,6 +90,7 @@ class SimpyWrapper:
         """
             method: str - название метода из библиотеки scipy.optimize
             bounds: - границы исследования функции
+            eps: - точность подсчёта градиента
         """
         self.f = f
         self.bounds = bounds
