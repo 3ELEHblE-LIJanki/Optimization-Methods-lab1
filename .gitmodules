@@ -1,0 +1,3 @@
+[submodule "Optimization-lib"]
+	path = lib
+	url = git@github.com:3ELEHblE-LIJanki/Optimization-lib.git
